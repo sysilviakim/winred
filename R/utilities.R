@@ -47,6 +47,107 @@ topic_color <- c(
 )
 
 # Functions ====================================================================
+desc_df_create_fxn <- function(df, timing = FALSE) {
+  if (timing == FALSE) {
+    out <- df %>%
+      ## Only in 2020 calendar year
+      filter(grepl("2020", rpt)) %>%
+      select(
+        cand_id, last_name, first_name, state, region, inc, office, treated,
+        avg_past_ttl, avg_past_ttl_log, recipient_cfscore, dwnom1,
+        seniority, no_election, office_election, seniority, gender,
+        proximity_recipient_cfscore, proximity_dwnom1, PVI, PVI_raw,
+        avg_ttl_opp, avg_ttl_opp_log, avg_indv_opp, avg_indv_opp_log,
+        avg_past_ttl_opp_log, first_year, last_year, ## treated_days,
+        state_club_size, contains("cash_on_hand")
+      ) %>%
+      dedup() %>%
+      group_by(across(setdiff(names(.), c("treated")))) %>%
+      summarise(treated = sum(treated)) %>%
+      mutate(treated = case_when(treated > 0 ~ "Yes", TRUE ~ "No")) %>%
+      mutate(
+        proximity_recipient_cfscore = case_when(
+          is.nan(proximity_recipient_cfscore) ~ NA_real_,
+          TRUE ~ proximity_recipient_cfscore
+        ),
+        proximity_dwnom1 = case_when(
+          is.nan(proximity_dwnom1) ~ NA_real_,
+          TRUE ~ proximity_dwnom1
+        )
+      ) %>%
+      ungroup()
+  } else {
+    out <- df %>%
+      filter(treated_sum > 0 & treated == 1) %>%
+      group_by(cand_id) %>%
+      arrange(rpt) %>%
+      slice(1)
+  }
+  out %>%
+    mutate(
+      treated_lab = ifelse(treated == "Yes", "WinRed Adopters", "Non-Adopters"),
+      treated_lab =
+        factor(treated_lab, levels = c("Non-Adopters", "WinRed Adopters")),
+      office_lab = factor(ifelse(office == "H", "House", "Senate")),
+      inc_lab = case_when(
+        inc == "INCUMBENT" ~ "Incumbent",
+        inc == "CHALLENGER" ~ "Challenger",
+        inc == "OPEN" ~ "Open Seat"
+      ),
+      inc_lab = factor(
+        inc_lab,
+        levels = c("Incumbent", "Open Seat", "Challenger"),
+        labels = c("Incumbent\n", "Open Seat\n", "Challenger\n")
+      ),
+      office_election_lab = factor(
+        office_election,
+        levels = c("House", "Senate, Re-election", "Senate, No election"),
+        labels = c("House", "Senate,\nRe-election", "Senate,\nNo election")
+      ),
+      senior_bin = cut(
+        seniority,
+        breaks = c(-.5, .5, 4, 8, 12, 50),
+        labels = paste0(
+          c("None", "1-4 years", "5-8 years", "9-12 years", "12+ years"),
+          "\n"
+        )
+      ),
+      PVI_bin = cut(
+        PVI, ## quantile(PVI, probs = seq(0, 1, 1 / 5), na.rm = TRUE)
+        breaks = rev(c(-45, -15, -10, -5, 5, 10, 45)),
+        labels = c(
+          ## ranges from -33 to 43
+          "D+43 to\nD+10", "D+10 to\nD+5", "D+5 to\nR+5",
+          "R+5 to\nR+10", "R+10 to\nR+15", "R+15 to\nR+33"
+        )
+      )
+    ) %>%
+    ungroup() %>%
+    droplevels() %>%
+    mutate(
+      proximity_cfscore_ntile = cut(
+        proximity_recipient_cfscore,
+        quantile(
+          proximity_recipient_cfscore,
+          probs = c(0, 0.005, 0.01, 1), na.rm = TRUE
+        ),
+        labels = c("0--0.5%", "0.5%--1%", "1%+")
+      ),
+      proximity_dwnom1_ntile = cut(
+        proximity_dwnom1,
+        quantile(
+          proximity_dwnom1,
+          probs = c(0, 0.005, 0.01, 1), na.rm = TRUE
+        ),
+        labels = c("0--0.5%", "0.5%--1%", "1%+")
+      ),
+      region = factor(
+        region,
+        levels = c("North Central", "Northeast", "South", "West")
+      )
+    )
+}
+
 minrpt_filter <- function(x, min_rpt) {
   x %>%
     map(
