@@ -370,3 +370,27 @@ etable(
   replace = TRUE,
   page.width = "a4"
 )
+
+## Table I.7, formerly unitem_heterogeneity_pnas_weekly_chain.tex
+etable(
+  rep(
+    mod_weekly_chain,
+    cluster = list("Candidate", "Date", ~ cand_id_int + date)
+  ),
+  file = here("tab", "TableI7.tex"),
+  title = paste0(
+    "Fixed-Effect Estimates of Prior Reliance on Unitemized Contributions on",
+    " Use of Weekly Recurring Contributions on WinRed"
+  ),
+  label = "tab:heterogeneity-effect-unitem-pnas-weekly-chain",
+  cluster = ~ cand_id_int + date,
+  drop = "(Intercept)",
+  digits = 3,
+  digits.stats = 2,
+  replace = TRUE,
+  page.width = "a4"
+  ## widths = c(8, 8)
+  ## Error in etable(rep(mod_weekly_chain, cluster = list("Candidate", "Date",  : 
+  ## The second element of '...' (named 'widths') is not valid: 
+  ## it should be a fixest object or a list of fixest objects, it is neither.
+)
