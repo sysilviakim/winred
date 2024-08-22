@@ -416,7 +416,6 @@ dev.off()
 
 # Summary figures ==============================================================
 ## Three dependent variables ---------------------------------------------------
-
 ## Figure 6(a), formerly pm_3ys_full_log_varying.pdf
 pdf(here("fig", "Fig6a.pdf"), width = 6, height = 3.5)
 ggPM_3ys(ymin = -3, ymax = 2.5) # previously set to -2.5 and 2.5
@@ -427,15 +426,18 @@ pdf(here("fig", "FigI5a.pdf"), width = 6, height = 3.5)
 ggPM_3ys(ymin = -4, ymax = 4)
 dev.off()
 
-pdf(here("fig", "pm_3ys_inc_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(c), formerly pm_3ys_inc_log_varying.pdf
+pdf(here("fig", "FigI5c.pdf"), width = 6, height = 3.5)
 ggPM_3ys(choice = "inc", ymin = -4, ymax = 4)
 dev.off()
 
-pdf(here("fig", "pm_3ys_senate_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(e), formerly pm_3ys_senate_log_varying.pdf
+pdf(here("fig", "FigI5e.pdf"), width = 6, height = 3.5)
 ggPM_3ys(choice = "senate", breaks = 1, ymin = -5.1, ymax = 9)
 dev.off()
 
-pdf(here("fig", "pm_3ys_house_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(g), formerly pm_3ys_house_log_varying.pdf
+pdf(here("fig", "FigI5g.pdf"), width = 6, height = 3.5)
 ggPM_3ys(choice = "house", ymin = -4, ymax = 4)
 dev.off()
 
@@ -445,19 +447,23 @@ pdf(here("fig", "Fig6b.pdf"), width = 6, height = 3.5)
 ggPM_3ys(item = TRUE, ymin = -3, ymax = 2.5)
 dev.off()
 
-pdf(here("fig", "pm_item_full_log_varying_axis2.pdf"), width = 6, height = 3.5)
+## Figure I.5(b), formerly pm_item_full_log_varying_axis2.pdf
+pdf(here("fig", "FigI5b.pdf"), width = 6, height = 3.5)
 ggPM_3ys(item = TRUE, ymin = -4, ymax = 4)
 dev.off()
 
-pdf(here("fig", "pm_item_inc_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(d), formerly pm_item_inc_log_varying.pdf
+pdf(here("fig", "FigI5d.pdf"), width = 6, height = 3.5)
 ggPM_3ys(item = TRUE, choice = "inc", ymin = -4, ymax = 4)
 dev.off()
 
-pdf(here("fig", "pm_item_senate_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(f), formerly pm_item_senate_log_varying.pdf
+pdf(here("fig", "FigI5f.pdf"), width = 6, height = 3.5)
 ggPM_3ys(item = TRUE, choice = "senate", breaks = 1, ymin = -5.1, ymax = 9)
 dev.off()
 
-pdf(here("fig", "pm_item_house_log_varying.pdf"), width = 6, height = 3.5)
+## Figure I.5(h), formerly pm_item_house_log_varying.pdf
+pdf(here("fig", "FigI5h.pdf"), width = 6, height = 3.5)
 ggPM_3ys(item = TRUE, choice = "house", ymin = -4, ymax = 4)
 dev.off()
 
@@ -502,7 +508,8 @@ p <- ggplot(
   scale_fill_viridis_d(end = 0.8, direction = -1) +
   scale_y_continuous(limits = c(0, 400))
 
-pdf(here("fig", "number_treated_full.pdf"), width = 4.8, height = 3.5)
+## Figure I.3(a), formerly number_treated_full.pdf
+pdf(here("fig", "FigI3a.pdf"), width = 4.8, height = 3.5)
 print(plot_nolegend(pdf_default(p)))
 dev.off()
 
@@ -513,266 +520,7 @@ p <- ggplot(temp, aes(x = Truncation, y = matchset, colour = Truncation)) +
   ylab("Matched Set Size") +
   scale_colour_viridis_d(end = 0.8, direction = -1)
 
-pdf(here("fig", "matched_set_size_full.pdf"), width = 4.8, height = 3.5)
+## Figure I.3(b), formerly matched_set_size_full.pdf
+pdf(here("fig", "FigI3b.pdf"), width = 4.8, height = 3.5)
 print(plot_nolegend(pdf_default(p)))
-dev.off()
-
-## Compare overall ATT across candidate groups and truncation schemes ----------
-att_by_cand <- NULL
-att_by_cand$full <- ggPM_var(
-  "pm_ttl_log_minrpt_",
-  choice = "full", ylim = c(-3.5, 3.5), breaks = 1
-)
-att_by_cand$inc <- ggPM_var(
-  "pm_ttl_log_minrpt_",
-  choice = "inc", ylim = c(-3.5, 3.5), breaks = 1
-)
-att_by_cand$senate <- ggPM_var(
-  "pm_ttl_log_minrpt_",
-  choice = "senate", ylim = c(-3.5, 3.5), breaks = 1
-)
-att_by_cand$house <- ggPM_var(
-  "pm_ttl_log_minrpt_",
-  choice = "house", ylim = c(-3.5, 3.5), breaks = 1
-)
-
-pdf(
-  here("fig", paste0("pm_ttl_log_wrap.pdf")),
-  width = 8, height = 5.6
-)
-print(grid_arrange_shared_legend(
-  att_by_cand$full + ggtitle("All Candidates"),
-  att_by_cand$inc + ggtitle("Incumbents") + ylab(""),
-  att_by_cand$senate + ggtitle("Senate") + ylab(""),
-  att_by_cand$house + ggtitle("House") + ylab(""),
-  nrow = 2, ncol = 2
-))
-dev.off()
-
-## Illustrate matching process with cand 1 -------------------------------------
-load(here("output", "pm_ttl_log_minrpt_17.Rda"))
-msets <- pm$full$out$att
-min_rpt <- 17
-df_ls <- minrpt_filter(df_ls_orig, min_rpt = min_rpt)
-id <- 1
-pos <- which(str_detect(names(msets), as.character(id)))
-
-random.cand.subset <- unique(df_ls$full$cand_id_int)
-p <- DisplayTreatment(
-  data = df_ls$full[df_ls$full$cand_id_int %in% random.cand.subset, ],
-  treatment = "treated", time.id = "rpt_int", unit.id = "cand_id_int",
-  xlab = "Quarters", ylab = "Candidates",
-  matched.set = msets[pos],
-  ## 5-class RdBu
-  # color.of.treated = "#ca0020",
-  # color.of.untreated = "#f4a582"
-  color.of.treated = "red",
-  color.of.untreated = "blue"
-)
-
-pdf(
-  here("fig", paste0("matchset_stefanik_minrpt_", min_rpt, ".pdf")),
-  width = 5.5, height = 4
-)
-print(
-  plot_notitle(plot_nolegend(pdf_default(p))) +
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      text = element_text(family = "CM Roman")
-    )
-)
-dev.off()
-
-# comparison plot without highlighting matching
-p_null <- DisplayTreatment(
-  unit.id = "cand_id_int", time.id = "rpt_int", legend.position = "none",
-  xlab = "Quarters", ylab = "Candidates",
-  ## Too many data points; not plotting properly.
-  treatment = "treated",
-  df_ls$full[df_ls$full$cand_id_int %in% random.cand.subset, ],
-  ## 5-class RdBu
-  color.of.treated = "#ca0020",
-  color.of.untreated = "#f4a582"
-)
-
-pdf(
-  here("fig", paste0("null_stefanik_minrpt_", min_rpt, ".pdf")),
-  width = 5.5, height = 4
-)
-print(
-  plot_notitle(plot_nolegend(pdf_default(p_null))) +
-    theme(
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      text = element_text(family = "CM Roman")
-    )
-)
-dev.off()
-
-## covbal min_print 17 horizontal version --------------------------------------
-obj_name <- paste0("pm_ttl_log_minrpt_17")
-pm_list <- list()
-pm_list[[obj_name]]$covbal <- pm %>%
-  imap(
-    ~ covbal_short(
-      .x, df_ls[[.y]],
-      plot = FALSE,
-      diffdv = paste0("diff_ttl_log")
-    )
-  )
-
-p_list <- pm_list[[obj_name]]$covbal %>%
-  map(~ ggCB(.x, nrow = 2))
-
-x <- "full"
-pdf(
-  here("fig", paste0("ttl_log_full_covbal_minrpt_17_horizontal.pdf")),
-  width = 8, height = 3.5
-)
-print(
-  p_list$full +
-    theme(
-      legend.position = "right",
-      axis.title = element_text(size = 15),
-      axis.text = element_text(size = 12),
-      legend.title = element_text(size = 15),
-      legend.text = element_text(size = 12)
-      # plot.title = element_text(size=18, hjust = -0.5)
-    ) +
-    # ggtitle("Standardized Distance in Covariates
-    #          \n Between Treated Units and Matched Control Units") +
-    guides(
-      colour = guide_legend(nrow = 6),
-      linetype = guide_legend(nrow = 6),
-      fill = guide_legend(title = "Covariates")
-    )
-)
-dev.off()
-
-# Example plot by funding sources only for min_rpt==17 for Polmeth -------------
-load(here("output", "pm_list.Rda"))
-min_rpt <- 17
-dodge <- 0.5
-end <- 0.8
-
-temp.all <-
-  as.data.frame(summary(pm_list$pm_ttl_log_minrpt_17$pm$full$est)$summary)
-temp.all$period <- rownames(temp.all)
-temp.indv <-
-  as.data.frame(summary(pm_list$pm_indv_log_minrpt_17$pm$full$est)$summary)
-temp.indv$period <- rownames(temp.indv)
-temp.oth <-
-  as.data.frame(summary(pm_list$pm_oth_log_minrpt_17$pm$full$est)$summary)
-temp.oth$period <- rownames(temp.oth)
-ylim <- c(NA_real_, NA_real_)
-ylim[1] <-
-  floor(min(c(temp.all$`2.5%`, temp.indv$`2.5%`, temp.oth$`2.5%`)) * 100) / 100
-ylim[2] <-
-  ceiling(max(c(temp.all$`97.5%`, temp.indv$`97.5%`, temp.oth$`97.5%`)) * 100) /
-    100
-# breaks=round((ylim[2]-ylim[1])/5,1)
-
-
-p.all <- ggplot(
-  temp.all,
-  aes(x = period, y = estimate)
-) +
-  geom_point(position = position_dodge(width = dodge), size = 5) +
-  xlab("Time") +
-  ylab("Estimated Effect of Treatment") +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  geom_pointrange(
-    aes(ymin = `2.5%`, ymax = `97.5%`),
-    position = position_dodge(width = dodge),
-    size = 1
-  ) +
-  scale_x_discrete(expand = c(0.02, 0.05)) +
-  theme_bw() +
-  scale_colour_viridis_d(end = end, direction = -1) +
-  scale_y_continuous(
-    limits = ylim, labels = scales::comma
-    # breaks = seq(ylim[1], ylim[2], by = breaks)
-  ) +
-  ggtitle("Total Fundraising") +
-  theme(
-    plot.title = element_text(size = 30, family = "CM Roman"),
-    axis.title.x = element_text(size = 30, family = "CM Roman"),
-    axis.title.y = element_text(size = 30, family = "CM Roman"),
-    axis.text = element_text(size = 20, family = "CM Roman")
-  )
-
-p.indv <- ggplot(
-  temp.indv,
-  aes(x = period, y = estimate)
-) +
-  geom_point(position = position_dodge(width = dodge), size = 5) +
-  xlab("Time") +
-  ylab("ATT") +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  geom_pointrange(
-    aes(ymin = `2.5%`, ymax = `97.5%`),
-    position = position_dodge(width = dodge),
-    size = 1
-  ) +
-  scale_x_discrete(expand = c(0.02, 0.05)) +
-  theme_bw() +
-  scale_colour_viridis_d(end = end, direction = -1) +
-  scale_y_continuous(
-    limits = ylim, labels = scales::comma
-    # breaks = seq(ylim[1], ylim[2], by = breaks)
-  ) +
-  ggtitle("Individual Contributions") +
-  theme(
-    plot.title = element_text(size = 30, family = "CM Roman"),
-    axis.title.x = element_text(size = 30, family = "CM Roman"),
-    axis.title.y = element_blank(),
-    axis.text = element_text(size = 20, family = "CM Roman")
-  )
-
-p.oth <- ggplot(
-  temp.oth,
-  aes(x = period, y = estimate)
-) +
-  geom_point(position = position_dodge(width = dodge), size = 5) +
-  xlab("Time") +
-  ylab("ATT") +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  geom_pointrange(
-    aes(ymin = `2.5%`, ymax = `97.5%`),
-    position = position_dodge(width = dodge),
-    size = 1
-  ) +
-  scale_x_discrete(expand = c(0.02, 0.05)) +
-  theme_bw() +
-  scale_colour_viridis_d(end = end, direction = -1) +
-  scale_y_continuous(
-    limits = ylim, labels = scales::comma
-    # breaks = seq(ylim[1], ylim[2], by = breaks)
-  ) +
-  ggtitle("Other Contributions") +
-  theme(
-    plot.title = element_text(size = 30, family = "CM Roman"),
-    axis.title.x = element_text(size = 30, family = "CM Roman"),
-    axis.title.y = element_blank(),
-    axis.text = element_text(size = 20, family = "CM Roman")
-  )
-
-pdf(
-  here("fig", paste0("funding_sources_wrap_min_rpt_17.pdf")),
-  width = 16, height = 8
-)
-
-print(
-  grid.arrange(
-    p.all, p.indv, p.oth,
-    ncol = 3,
-    top = textGrob(
-      "Treatment Effect by (Logged) Quarterly Fundraising Outcome",
-      gp = gpar(fontsize = 35, fontfamily = "CM Roman")
-    ),
-    padding = unit(5, "line")
-  )
-)
-
 dev.off()
