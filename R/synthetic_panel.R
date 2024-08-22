@@ -336,6 +336,7 @@ file.rename(
   here("tab", "TableI4t.tex")
 )
 
+## Figure I.2 ------------------------------------------------------------------
 ## Figure I.2(a)
 file.rename(
   here("fig", "display_treatment_150sample_minrpt_17.pdf"),
@@ -346,6 +347,56 @@ file.rename(
 file.rename(
   here("fig", "matchset_only_1stcand_minrpt_17.pdf"),
   here("fig", "FigI2b.pdf")
+)
+
+## Figure I.6 ------------------------------------------------------------------
+file.rename(
+  here("fig", "ttl_log_wrap_minrpt_17.pdf"),
+  here("fig", "FigI6a.pdf")
+)
+file.rename(
+  here("fig", "ttl_log_wrap_covbal_minrpt_17.pdf"),
+  here("fig", "FigI6b.pdf")
+)
+
+## Figure I.7 ------------------------------------------------------------------
+file.rename(
+  here("fig", "indv_log_wrap_minrpt_17.pdf"),
+  here("fig", "FigI7a.pdf")
+)
+file.rename(
+  here("fig", "indv_log_wrap_covbal_minrpt_17.pdf"),
+  here("fig", "FigI7b.pdf")
+)
+
+## Figure I.8 ------------------------------------------------------------------
+file.rename(
+  here("fig", "oth_log_wrap_minrpt_17.pdf"),
+  here("fig", "FigI8a.pdf")
+)
+file.rename(
+  here("fig", "oth_log_wrap_covbal_minrpt_17.pdf"),
+  here("fig", "FigI8b.pdf")
+)
+
+## Figure I.9 ------------------------------------------------------------------
+file.rename(
+  here("fig", "item_log_wrap_minrpt_17.pdf"),
+  here("fig", "FigI9a.pdf")
+)
+file.rename(
+  here("fig", "item_log_wrap_covbal_minrpt_17.pdf"),
+  here("fig", "FigI9b.pdf")
+)
+
+## Figure I.10 -----------------------------------------------------------------
+file.rename(
+  here("fig", "unitem_log_wrap_minrpt_17.pdf"),
+  here("fig", "FigI10a.pdf")
+)
+file.rename(
+  here("fig", "unitem_log_wrap_covbal_minrpt_17.pdf"),
+  here("fig", "FigI10b.pdf")
 )
 
 ## Remove the rest that ends with _0, _16, _17, _18, _19 (both .tex and .pdf)
