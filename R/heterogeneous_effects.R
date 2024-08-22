@@ -123,3 +123,250 @@ print(
   include.rownames = FALSE,
   booktabs = TRUE
 )
+
+refunds_by_day %<>% left_join(pnas_campaigns)
+refunds_by_day %>% filter(!is.na(treat)) %$% summary(treat)
+refunds_by_day %>% filter(!is.na(treat)) %$% table(weeks_to_treat)
+refunds_by_day %>% filter(!is.na(treat)) %$% table(week)
+refunds_by_day %<>% mutate(
+  weeks_to_treat = case_when(
+    treat == 0 ~ 0,
+    treat == 1 & weeks_to_treat >= 0 ~ weeks_to_treat + 1,
+    treat == 1 & weeks_to_treat < 0 ~ 0,
+    TRUE ~ NA_integer_
+  )
+)
+refunds_summ <-
+  refunds_by_day %>%
+  filter(!is.na(pre_pct_unitem_high)) %>%
+  group_by(cand_id_int, date) %>%
+  summarize(
+    weeks_to_treat = first(weeks_to_treat),
+    senate = first(senate),
+    incumbent = first(incumbent),
+    open = first(open),
+    no_election = first(no_election),
+    PVI = first(PVI),
+    pct_indv = first(pct_indv),
+    mean_pre_pct_unitem = first(mean_pre_pct_unitem),
+    pre_pct_unitem_high = first(pre_pct_unitem_high),
+    total_amount = sum(
+      donation_amount * (source == "Individual Donation"),
+      na.rm = TRUE
+    ),
+    total_weekly_chain = sum(
+      donation_amount * (source == "Part of a weekly chain"),
+      na.rm = TRUE
+    ),
+    total_monthly_chain = sum(
+      donation_amount * (source == "Part of a monthly chain"),
+      na.rm = TRUE
+    ),
+    total_chain = sum(
+      donation_amount * (str_detect(source, "chain")),
+      na.rm = TRUE
+    ),
+    total_refund = sum(
+      refunded * donation_amount * (source == "Individual Donation"),
+      na.rm = TRUE
+    ),
+    weekly_refund = sum(
+      refunded * donation_amount * (source == "Part of a weekly chain"),
+      na.rm = TRUE
+    ),
+    monthly_refund = sum(
+      refunded * donation_amount * (source == "Part of a monthly chain"),
+      na.rm = TRUE
+    )
+  ) %>%
+  ungroup()
+refunds_summ %<>% mutate(
+  refund_rate = total_refund / total_amount,
+  weekly_refund_rate = weekly_refund / total_amount,
+  monthly_refund_rate = monthly_refund / total_amount,
+  weekly_chain_rate = total_weekly_chain / total_amount,
+  weekly_chain_rate = ifelse(weekly_chain_rate > 1, 1, weekly_chain_rate),
+  monthly_chain_rate = total_monthly_chain / total_amount,
+  monthly_chain_rate = ifelse(monthly_chain_rate > 1, 1, monthly_chain_rate),
+  chain_rate = total_chain / total_amount,
+  chain_rate = ifelse(chain_rate > 1, 1, chain_rate)
+)
+refunds_summ %$% summary(refund_rate)
+refunds_summ %$% summary(monthly_chain_rate)
+
+refunds_summ %<>% mutate(
+  treat = weeks_to_treat > 0
+)
+
+refunds_summ %>%
+  group_by(cand_id_int) %>%
+  summarize(
+    sum_weeks_to_treat = sum(weeks_to_treat, na.rm = TRUE),
+    pre_pct_unitem_high = first(pre_pct_unitem_high)
+  ) %>%
+  ungroup() %>%
+  print()
+
+# 0.366 (***)
+refunds_summ %>%
+  feols(
+    treat ~ pre_pct_unitem_high +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+mean(refunds_summ$treat, na.rm = TRUE) # 0.212
+
+### The effect of treat on refunds may be lagged...
+# 0.0276 (***)
+refunds_summ %>%
+  feols(
+    refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+# n.s.
+refunds_summ %>%
+  feols(
+    weekly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+# n.s.
+refunds_summ %>%
+  feols(
+    monthly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+
+# 0.0748 (***)
+# 0.0305 (***)
+refunds_summ %>%
+  feols(
+    chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+# 0.0265 (**)
+# 0.00436 (*)
+refunds_summ %>%
+  feols(
+    weekly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+mean(refunds_summ$weekly_chain_rate, na.rm = TRUE) # 0.0392
+# 0.0510 (+)
+# 0.0301 (**)
+refunds_summ %>%
+  feols(
+    monthly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = c("cand_id_int", "date")
+  ) %>%
+  summary()
+mean(refunds_summ$monthly_chain_rate, na.rm = TRUE) # 0.220
+
+mod_treat <-
+  refunds_summ %>%
+  mutate(pct_indv = pct_indv * 100) %>%
+  feols(
+    treat ~ pre_pct_unitem_high +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = "cand_id_int"
+  ) %>%
+  summary()
+mod_treat
+
+refunds_summ %>%
+  group_by(date) %>%
+  mutate(
+    mean_treat = mean(treat, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    diff_mean_treat = treat - mean_treat
+  ) %$% summary(diff_mean_treat) # 0.000
+
+refunds_summ %$% mean(treat, na.rm = TRUE) # 0.227
+
+mod_weekly_chain <-
+  refunds_summ %>%
+  mutate(
+    pct_indv = pct_indv * 100,
+    weekly_chain_rate = weekly_chain_rate * 100
+  ) %>%
+  feols(
+    weekly_chain_rate ~ pre_pct_unitem_high + treat +
+      senate + incumbent + open + no_election + PVI + pct_indv |
+      date,
+    data = .,
+    cluster = "cand_id_int"
+  ) %>%
+  summary()
+mod_weekly_chain
+setFixest_dict(c(
+  pre_pct_unitem_highTRUE = "High Past Reliance on Unitemized Donations",
+  weekly_chain_rate = "% WinRed Fundraising From Weekly Recurring Donations",
+  senate = "Senate",
+  incumbent = "Incumbent",
+  open = "Open",
+  no_election = "No Election",
+  PVI = "Cook PVI",
+  pct_indv = "% Fundraising From Individual Donors",
+  date = "Date",
+  cand_id_int = "Candidate",
+  treat = "I(Campaign Added Weekly Defaults)",
+  treatTRUE = "I(Campaign Added Weekly Defaults)"
+))
+
+setFixest_etable(fitstat = ~ n + r2, page.width = "a4")
+
+tablestyle <- style.tex(
+  main = "aer",
+  fixef.suffix = " FEs",
+  fixef.where = "var",
+  fixef.title = "",
+  stats.title = "\\midrule",
+  tablefoot = FALSE,
+  yesNo = "\\checkmark"
+)
+
+## Table I.6, formerly unitem_heterogeneity_pnas_treat.tex
+etable(
+  rep(mod_treat, cluster = list("Candidate", "Date", ~ cand_id_int + date)),
+  file = here("tab", "TableI6.tex"),
+  title = paste0(
+    "Fixed-Effect Estimates of Prior Reliance on Unitemized Contributions on",
+    " Use of Weekly Defaults on WinRed"
+  ),
+  label = "tab:heterogeneity-effect-unitem-pnas-treat",
+  cluster = ~ cand_id_int + date,
+  drop = "(Intercept)",
+  digits = 3,
+  digits.stats = 2,
+  replace = TRUE,
+  page.width = "a4"
+)
