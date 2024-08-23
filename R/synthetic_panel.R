@@ -10,9 +10,21 @@ yvar_logged <- "ttl_log"
 # Loop over min_rpt to generate models under different samples =================
 ## 19 = Q3 2019
 pm_list <- list()
+min_rpt_list <- list()
+I2 <- list()
 for (min_rpt in c(0, 16, 17, 18, 19)) {
   print(paste0("----- min_rpt == ", min_rpt, " -----"))
-  df_ls <- minrpt_filter(df_ls_orig, min_rpt = min_rpt)
+  min_rpt_list[[paste0("min_rpt_", min_rpt)]] <- 
+    df_ls <- minrpt_filter(df_ls_orig, min_rpt = min_rpt)
+  
+  ## Components of Table I.2 ===================================================
+  I2[[paste0("min_rpt_", min_rpt)]] <- tibble(
+    type = names(df_ls),
+    !!as.name(paste0("min_rpt_", min_rpt, "_cand")) := 
+      df_ls %>% map_dbl(~ length(unique(.x$cand_id))),
+    !!as.name(paste0("min_rpt_", min_rpt, "_candXperiod")) := 
+      df_ls %>% map_dbl(nrow)
+  )
 
   ## Plot a sample of random 150 candidates ====================================
   df <- df_ls$full %>% mutate(cand_id = as.integer(factor(cand_id)) + 1)
@@ -575,3 +587,48 @@ p <- ggplot(temp, aes(x = Truncation, y = matchset, colour = Truncation)) +
 pdf(here("fig", "FigI3b.pdf"), width = 4.8, height = 3.5)
 print(plot_nolegend(pdf_default(p)))
 dev.off()
+
+## Table I2 needs more manual assembly -----------------------------------------
+I2_combined <- I2 %>%
+  Reduce(left_join, .) %>%
+  mutate(
+    type = factor(
+      type, 
+      levels = c("full", "inc", "house", "senate"),
+      labels = c("All", "Incumbents", "House", "Senate")
+    )
+  ) %>%
+  arrange(type) %>%
+  mutate(across(!type, ~ formatC(.x, format = "f", big.mark = ",", digits = 0)))
+
+header <- "
+\\begin{table}[!bthp]
+    \\centering
+    \\resizebox{\\textwidth}{!}{
+    \\begin{tabular}{lrrrrrrrrrrrrrrr}
+        \\toprule 
+        & \\multicolumn{2}{c}{No Truncation} & \\multicolumn{2}{c}{\\begin{tabular}[x]{@{}c@{}}Truncated from\\\\2018 Q4\\end{tabular}} & \\multicolumn{2}{c}{\\begin{tabular}[x]{@{}c@{}}Truncated from\\\\2019 Q1\\end{tabular}} & \\multicolumn{2}{c}{\\begin{tabular}[x]{@{}c@{}}Truncated from\\\\2019 Q2\\end{tabular}} & \\multicolumn{2}{c}{\\begin{tabular}[x]{@{}c@{}}Truncated from\\\\2019 Q3\\end{tabular}} & \\\\
+        Subgroup & Candidates & \\begin{tabular}[x]{@{}c@{}}Candidate\\\\$\\times$ Period\\end{tabular} & Candidates & \\begin{tabular}[x]{@{}c@{}}Candidate\\\\$\\times$ Period\\end{tabular} & Candidates & \\begin{tabular}[x]{@{}c@{}}Candidate\\\\$\\times$ Period\\end{tabular} & Candidates & \\begin{tabular}[x]{@{}c@{}}Candidate\\\\$\\times$ Period\\end{tabular} & Candidates & \\begin{tabular}[x]{@{}c@{}}Candidate\\\\$\\times$ Period\\end{tabular} \\\\
+"
+
+footer <- "
+    \\end{tabular}}
+    \\caption{ATT Estimates, Logged Outcomes: Number of Candidates and Number of Total Candidate $\\times$ Period Observations}
+    \\label{tab:cand_period_n}
+\\end{table}
+"
+
+latex_table_output <- capture.output(
+  print(
+    xtable(I2_combined),
+    only.contents = TRUE, booktabs = TRUE,
+    include.rownames = FALSE, include.colnames = FALSE
+  )
+)
+
+# Combine header, table content, and footer
+final <- paste(
+  header, paste(latex_table_output, collapse = "\n"), footer,
+  sep = "\n"
+)
+writeLines(final, con = here("tab", "TableI2.tex"))
