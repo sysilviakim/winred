@@ -361,8 +361,8 @@ ggPM <- function(x, ylab = "Estimated Effect of Treatment", xlab = "Time",
 
 ggPM_var <- function(x, choice = "full", target = NULL,
                      dodge = 0.5, end = 0.8, ylim = NULL, breaks = NULL) {
-  ## target <- ifelse(grepl("gender", x), "X1", "TRUE.")
-  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+  if (str_detect(x, "corp")) { 
+    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
       map("att_summ")
   }
@@ -378,8 +378,9 @@ ggPM_var <- function(x, choice = "full", target = NULL,
           as_tibble(rownames = "period"),
         .id = "min_rpt"
       )
-  } 
-  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+  }
+  if (is.null(target) & str_detect(x, "corp")) { 
+    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- temp %>%
       map_dfr(
         ~ .x[[choice]] %>%
@@ -387,7 +388,8 @@ ggPM_var <- function(x, choice = "full", target = NULL,
         .id = "min_rpt"
       )
   }
-  if (!str_detect(x, "corp"))  {
+  if (is.null(target) & str_detect(x, "corp")) { 
+    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- temp %>%
       map_dfr(
         ~ summary(.x[[choice]]$est)$summary %>%
