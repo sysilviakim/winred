@@ -116,6 +116,8 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
 save(pm_list, file = here("output", "pm_list_hetero.Rda"))
 
 # Visualization ================================================================
+load(here("output", "pm_list_hetero.Rda"))
+
 ## Figure 7, formerly heterogeneity_unitemized_wrap.pdf
 pdf(
   here("fig", paste0("Fig7.pdf")),
@@ -123,10 +125,10 @@ pdf(
 )
 print(
   grid_arrange_shared_legend(
-    ggPM_var("pm_hetero_unitemized_log_minrpt_", target = "FALSE") +
+    ggPM_var2("pm_hetero_unitemized_log_minrpt_", target = "FALSE") +
       ggtitle("Low Reliance on Unitemized $") +
       scale_y_continuous(limits = c(-4.5, 2), breaks = seq(-4, 2, by = 1)),
-    ggPM_var("pm_hetero_unitemized_log_minrpt_", target = "TRUE") +
+    ggPM_var2("pm_hetero_unitemized_log_minrpt_", target = "TRUE") +
       ggtitle("High Reliance on Unitemized $") + ylab("") +
       scale_y_continuous(limits = c(-4.5, 2), breaks = seq(-4, 2, by = 1))
   )
@@ -140,10 +142,10 @@ pdf(
 )
 print(
   grid_arrange_shared_legend(
-    ggPM_var("pm_hetero_gender_log_minrpt_", target = "1") +
+    ggPM_var2("pm_hetero_gender_log_minrpt_", target = "1") +
       ggtitle("Male Candidates") +
       scale_y_continuous(limits = c(-3.5, 2.5), breaks = seq(-3, 2.5, by = 1)),
-    ggPM_var("pm_hetero_gender_log_minrpt_", target = "0") +
+    ggPM_var2("pm_hetero_gender_log_minrpt_", target = "0") +
       ggtitle("Female Candidates") + ylab("") +
       scale_y_continuous(limits = c(-3.5, 2.5), breaks = seq(-3, 2.5, by = 1))
   )

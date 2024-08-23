@@ -361,6 +361,93 @@ ggPM <- function(x, ylab = "Estimated Effect of Treatment", xlab = "Time",
 
 ggPM_var <- function(x, choice = "full", target = NULL,
                      dodge = 0.5, end = 0.8, ylim = NULL, breaks = NULL) {
+  ## target <- ifelse(grepl("gender", x), "X1", "TRUE.")
+  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+    temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
+      map("att_summ")
+  }
+  else {
+    temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
+      map("pm")
+  }
+  
+  if (!is.null(target)) {
+    temp <- temp %>%
+      map_dfr(
+        ~ summary(.x$est[[target]])$summary %>%
+          as_tibble(rownames = "period"),
+        .id = "min_rpt"
+      )
+  } 
+  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+    temp <- temp %>%
+      map_dfr(
+        ~ .x[[choice]] %>%
+          as_tibble(rownames = "period"),
+        .id = "min_rpt"
+      )
+  }
+  if (!str_detect(x, "corp"))  {
+    temp <- temp %>%
+      map_dfr(
+        ~ summary(.x[[choice]]$est)$summary %>%
+          as_tibble(rownames = "period"),
+        .id = "min_rpt"
+      )
+  }
+  
+  temp <- temp %>%
+    mutate(min_rpt = readr::parse_number(min_rpt)) %>%
+    mutate(
+      Truncation = factor(
+        min_rpt,
+        levels = c(0, 16, 17, 18, 19),
+        labels = c(
+          "Not Truncated", "From 2018 Q4",
+          "From 2019 Q1", "From 2019 Q2", "From 2019 Q3"
+        )
+      )
+    )
+  
+  p <- ggplot(
+    temp,
+    aes(x = period, y = estimate, group = Truncation, color = Truncation)
+  ) +
+    geom_point(position = position_dodge(width = dodge)) +
+    xlab("Time") +
+    ylab("Estimated Effect of Treatment") +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    geom_pointrange(
+      aes(ymin = `2.5%`, ymax = `97.5%`),
+      position = position_dodge(width = dodge)
+    ) +
+    scale_x_discrete(expand = c(0.02, 0.05)) +
+    theme_bw() +
+    scale_colour_viridis_d(end = end, direction = -1)
+  
+  p <- pdf_default(p) +
+    theme(legend.position = "bottom") +
+    guides(
+      group = guide_legend(nrow = 2, byrow = TRUE),
+      color = guide_legend(nrow = 2, byrow = TRUE)
+    )
+  
+  if (!is.null(ylim)) {
+    if (is.null(breaks)) {
+      stop("Specify the breaks.")
+    }
+    p <- p +
+      scale_y_continuous(
+        limits = ylim, labels = scales::comma,
+        breaks = seq(ylim[1], ylim[2], by = breaks)
+      )
+  }
+  
+  return(p)
+}
+
+ggPM_var2 <- function(x, choice = "full", target = NULL,
+                      dodge = 0.5, end = 0.8, ylim = NULL, breaks = NULL) {
   if (str_detect(x, "corp")) { 
     # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
