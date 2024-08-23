@@ -113,6 +113,7 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
     covbal_short(pm, df, plot = FALSE, diffdv = "diff_ttl_log")
   pm_list[[obj_name]]$att_summ <- summary(pm$est$`1`)$summary
 }
+save(pm_list, file = here("output", "pm_list_hetero.Rda"))
 
 # Visualization ================================================================
 ## Figure 7, formerly heterogeneity_unitemized_wrap.pdf
