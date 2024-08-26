@@ -198,94 +198,94 @@ refunds_summ %<>% mutate(
   treat = weeks_to_treat > 0
 )
 
-refunds_summ %>%
-  group_by(cand_id_int) %>%
-  summarize(
-    sum_weeks_to_treat = sum(weeks_to_treat, na.rm = TRUE),
-    pre_pct_unitem_high = first(pre_pct_unitem_high)
-  ) %>%
-  ungroup() %>%
-  print()
+# refunds_summ %>%
+#   group_by(cand_id_int) %>%
+#   summarize(
+#     sum_weeks_to_treat = sum(weeks_to_treat, na.rm = TRUE),
+#     pre_pct_unitem_high = first(pre_pct_unitem_high)
+#   ) %>%
+#   ungroup() %>%
+#   print()
 
-# 0.366 (***)
-refunds_summ %>%
-  feols(
-    treat ~ pre_pct_unitem_high +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-mean(refunds_summ$treat, na.rm = TRUE) # 0.212
+# # 0.366 (***)
+# refunds_summ %>%
+#   feols(
+#     treat ~ pre_pct_unitem_high +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# mean(refunds_summ$treat, na.rm = TRUE) # 0.212
 
-### The effect of treat on refunds may be lagged...
-# 0.0276 (***)
-refunds_summ %>%
-  feols(
-    refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-# n.s.
-refunds_summ %>%
-  feols(
-    weekly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-# n.s.
-refunds_summ %>%
-  feols(
-    monthly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
+# ### The effect of treat on refunds may be lagged...
+# # 0.0276 (***)
+# refunds_summ %>%
+#   feols(
+#     refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# # n.s.
+# refunds_summ %>%
+#   feols(
+#     weekly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# # n.s.
+# refunds_summ %>%
+#   feols(
+#     monthly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
 
-# 0.0748 (***)
-# 0.0305 (***)
-refunds_summ %>%
-  feols(
-    chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-# 0.0265 (**)
-# 0.00436 (*)
-refunds_summ %>%
-  feols(
-    weekly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-mean(refunds_summ$weekly_chain_rate, na.rm = TRUE) # 0.0392
-# 0.0510 (+)
-# 0.0301 (**)
-refunds_summ %>%
-  feols(
-    monthly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-      senate + incumbent + open + no_election + PVI + pct_indv |
-      date,
-    data = .,
-    cluster = c("cand_id_int", "date")
-  ) %>%
-  summary()
-mean(refunds_summ$monthly_chain_rate, na.rm = TRUE) # 0.220
+# # 0.0748 (***)
+# # 0.0305 (***)
+# refunds_summ %>%
+#   feols(
+#     chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# # 0.0265 (**)
+# # 0.00436 (*)
+# refunds_summ %>%
+#   feols(
+#     weekly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# mean(refunds_summ$weekly_chain_rate, na.rm = TRUE) # 0.0392
+# # 0.0510 (+)
+# # 0.0301 (**)
+# refunds_summ %>%
+#   feols(
+#     monthly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
+#       senate + incumbent + open + no_election + PVI + pct_indv |
+#       date,
+#     data = .,
+#     cluster = c("cand_id_int", "date")
+#   ) %>%
+#   summary()
+# mean(refunds_summ$monthly_chain_rate, na.rm = TRUE) # 0.220
 
 mod_treat <-
   refunds_summ %>%
@@ -394,3 +394,4 @@ etable(
   ## The second element of '...' (named 'widths') is not valid: 
   ## it should be a fixest object or a list of fixest objects, it is neither.
 )
+

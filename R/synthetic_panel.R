@@ -259,8 +259,12 @@ file.rename(
 ## Table I.4 -------------------------------------------------------------------
 ## Rename files externally; otherwise, hard to hardcode
 ## No truncation
-file.rename(
-  here("tab", "ttl_att_full_minrpt_0.tex"),
+# file.rename(
+#   here("tab", "ttl_att_full_minrpt_0.tex"),
+#   here("tab", "TableI4a.tex")
+# )
+file.copy(
+  here("tab", "TableI3a.tex"),
   here("tab", "TableI4a.tex")
 )
 file.rename(
@@ -277,8 +281,12 @@ file.rename(
 )
 
 ## Truncated from 2018 Q4
-file.rename(
-  here("tab", "ttl_att_full_minrpt_16.tex"),
+# file.rename(
+#   here("tab", "ttl_att_full_minrpt_16.tex"),
+#   here("tab", "TableI4e.tex")
+# )
+file.copy(
+  here("tab", "TableI3d.tex"),
   here("tab", "TableI4e.tex")
 )
 file.rename(
@@ -295,8 +303,12 @@ file.rename(
 )
 
 ## Truncated from 2019 Q1
-file.rename(
-  here("tab", "ttl_att_full_minrpt_17.tex"),
+# file.rename(
+#   here("tab", "ttl_att_full_minrpt_17.tex"),
+#   here("tab", "TableI4i.tex")
+# )
+file.copy(
+  here("tab", "TableI3g.tex"),
   here("tab", "TableI4i.tex")
 )
 file.rename(
@@ -313,8 +325,12 @@ file.rename(
 )
 
 ## Truncated from 2019 Q2
-file.rename(
-  here("tab", "ttl_att_full_minrpt_18.tex"),
+# file.rename(
+#   here("tab", "ttl_att_full_minrpt_18.tex"),
+#   here("tab", "TableI4m.tex")
+# )
+file.copy(
+  here("tab", "TableI3j.tex"),
   here("tab", "TableI4m.tex")
 )
 file.rename(
@@ -331,8 +347,12 @@ file.rename(
 )
 
 ## Truncated from 2019 Q3
-file.rename(
-  here("tab", "ttl_att_full_minrpt_19.tex"),
+# file.rename(
+#   here("tab", "ttl_att_full_minrpt_19.tex"),
+#   here("tab", "TableI4q.tex")
+# )
+file.copy(
+  here("tab", "TableI3m.tex"),
   here("tab", "TableI4q.tex")
 )
 file.rename(
@@ -462,9 +482,9 @@ temp <- list(
   refined = pm_list[["pm_ttl_log_minrpt_17"]]$covbal$full
 )
 
-p1 <- ggCB(temp$no_matching_benchmark, ylim = c(-1.5, 1.5))
-p2 <- ggCB(temp$no_refinement_benchmark, ylim = c(-1.5, 1.5))
-p3 <- ggCB(temp$refined, ylim = c(-1.5, 1.5))
+p1 <- ggCB(temp$no_matching_benchmark[1:3, ], ylim = c(-1.5, 1.5))
+p2 <- ggCB(temp$no_refinement_benchmark[1:3, ], ylim = c(-1.5, 1.5))
+p3 <- ggCB(temp$refined[1:3, ], ylim = c(-1.5, 1.5))
 
 ## Figure 5, formerly covbal_improve.pdf
 pdf(here("fig", "Fig5.pdf"), width = 7.5, height = 3)
@@ -632,3 +652,4 @@ final <- paste(
   sep = "\n"
 )
 writeLines(final, con = here("tab", "TableI2.tex"))
+
