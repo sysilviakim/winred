@@ -8,7 +8,7 @@ fm_bench <- as.formula(paste0(yvar, " ~ ", tvar))
 yvar_logged <- "ttl_log"
 
 # Basic model: 2-way FE ========================================================
-df %<>% # we actually need lagged treatment to be consistent with PanelMatch
+df %<>% 
   arrange(cand_id, rpt_int) %>%
   group_by(cand_id) %>%
   mutate(
@@ -24,7 +24,6 @@ est_2wfe <- feols(m_2wfe, data = df, cluster = ~cand_id)
 print(est_2wfe)
 
 tvar_granger <- c(
-  # can't include more leads due to collinearity
   "treated_lead2",
   "treated_lead1",
   "treated"

@@ -52,8 +52,6 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
   pm <- PanelMatch_short(
     df,
     "ttl_log",
-    # For some reason this is really necessary
-    # for getting rid of an obscure R error msg
     cov_bench(dv = "diff_ttl_log", xvar = xvar),
     moderator = "pre_pct_unitem_high"
   )
@@ -82,8 +80,6 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
     cov_bench(
       dv = "diff_ttl_log",
       xvar = xvar
-      # For some reason this is really necessary
-      # for getting rid of an obscure R error msg
     ),
     moderator = "pre_pct_indv_high"
   )
@@ -103,8 +99,6 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
     cov_bench(
       dv = "diff_ttl_log",
       xvar = xvar
-      # For some reason this is really necessary
-      # for getting rid of an obscure R error msg
     ),
     moderator = "gender"
   )

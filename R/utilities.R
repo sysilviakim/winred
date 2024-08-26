@@ -29,7 +29,7 @@ library(quanteda)
 library(quanteda.corpora)
 library(quanteda)
 library(quanteda.corpora)
-library(keyATM) ## R&R updated ver: 0.5.1
+library(keyATM) 
 library(stm)
 library(tidytext)
 
@@ -50,7 +50,6 @@ topic_color <- c(
 desc_df_create_fxn <- function(df, timing = FALSE) {
   if (timing == FALSE) {
     out <- df %>%
-      ## Only in 2020 calendar year
       filter(grepl("2020", rpt)) %>%
       select(
         cand_id, last_name, first_name, state, region, inc, office, treated,
@@ -58,7 +57,7 @@ desc_df_create_fxn <- function(df, timing = FALSE) {
         seniority, no_election, office_election, seniority, gender,
         proximity_recipient_cfscore, proximity_dwnom1, PVI, PVI_raw,
         avg_ttl_opp, avg_ttl_opp_log, avg_indv_opp, avg_indv_opp_log,
-        avg_past_ttl_opp_log, first_year, last_year, ## treated_days,
+        avg_past_ttl_opp_log, first_year, last_year, 
         state_club_size, contains("cash_on_hand")
       ) %>%
       dedup() %>%
@@ -113,7 +112,7 @@ desc_df_create_fxn <- function(df, timing = FALSE) {
         )
       ),
       PVI_bin = cut(
-        PVI, ## quantile(PVI, probs = seq(0, 1, 1 / 5), na.rm = TRUE)
+        PVI, 
         breaks = rev(c(-45, -15, -10, -5, 5, 10, 45)),
         labels = c(
           ## ranges from -33 to 43
@@ -213,7 +212,7 @@ covbal_short <- function(out,
                          covariates = c(
                            "senate", "incumbent", "open",
                            "no_election", "PVI",
-                           "pct_indv" # Zhao (2024-02-20): added this to be consistent with corp PAC placebo test
+                           "pct_indv" 
                          ),
                          ...) {
   covariates <- c(diffdv, covariates)
@@ -361,8 +360,7 @@ ggPM <- function(x, ylab = "Estimated Effect of Treatment", xlab = "Time",
 
 ggPM_var <- function(x, choice = "full", target = NULL,
                      dodge = 0.5, end = 0.8, ylim = NULL, breaks = NULL) {
-  ## target <- ifelse(grepl("gender", x), "X1", "TRUE.")
-  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+  if (str_detect(x, "corp")) { 
     temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
       map("att_summ")
   }
@@ -379,7 +377,7 @@ ggPM_var <- function(x, choice = "full", target = NULL,
         .id = "min_rpt"
       )
   } 
-  if (str_detect(x, "corp")) { # Zhao (2024-02-22): added this for the corp PAC placebo test
+  if (str_detect(x, "corp")) { 
     temp <- temp %>%
       map_dfr(
         ~ .x[[choice]] %>%
@@ -449,7 +447,6 @@ ggPM_var <- function(x, choice = "full", target = NULL,
 ggPM_var2 <- function(x, choice = "full", target = NULL,
                       dodge = 0.5, end = 0.8, ylim = NULL, breaks = NULL) {
   if (str_detect(x, "corp")) { 
-    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- pm_list[paste0(x, c(0, 16, 17, 18, 19))] %>%
       map("att_summ")
   }
@@ -467,7 +464,6 @@ ggPM_var2 <- function(x, choice = "full", target = NULL,
       )
   }
   if (is.null(target) & str_detect(x, "corp")) { 
-    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- temp %>%
       map_dfr(
         ~ .x[[choice]] %>%
@@ -476,7 +472,6 @@ ggPM_var2 <- function(x, choice = "full", target = NULL,
       )
   }
   if (is.null(target) & str_detect(x, "corp")) { 
-    # Zhao (2024-02-22): added this for the corp PAC placebo test
     temp <- temp %>%
       map_dfr(
         ~ summary(.x[[choice]]$est)$summary %>%
@@ -630,13 +625,6 @@ predict_formula <- function(x, cfscore = TRUE, state = TRUE, timing = FALSE) {
   }
   
   if (timing) {
-    # covariates <- c(
-    #   covariates,
-    #   paste0("diff_ttl_log_lag", seq(3)),
-    #   paste0("diff_ttl_opp_log_lag", seq(3)),
-    #   "avg_first_date_proximity_recipient_cfscore",
-    #   "avg_first_date_state"
-    # )
     if (cfscore == FALSE) {
       covariates <- setdiff(
         covariates,
@@ -677,9 +665,7 @@ barplot_quick <- function(df, var, label) {
     labs(x = label, y = "Fraction of Candidates on WinRed")
   pdf_default(p) +
     theme(
-      axis.title.x = element_blank() # ,
-      # axis.title.y = element_text(size = 15),
-      # axis.text = element_text(size = 15)
+      axis.title.x = element_blank()
     )
 }
 
@@ -930,8 +916,6 @@ rename_lmterm <- function(x) {
         term == "regionNorth Central" ~ "Region: North Central",
         term == "regionNortheast" ~ "Region: Northeast",
         term == "regionWest" ~ "Region: West",
-        # term %in% paste0("state", state.abb) ~
-        #   state.name[which(paste0("state", state.abb) == term)],
         TRUE ~ str_to_title(term)
       )
     ) %>%
@@ -971,8 +955,6 @@ coeftest_summ <- function(x, fname = NULL, export = FALSE, align = "llc",
     tidy() %>%
     ## Drop region FEs
     filter(!(str_sub(term, 1, 6) == "region")) %>%
-    ## Drop state FEs
-    ## filter(!(str_sub(term, 1, 5) == "state"))
     rename_lmterm() %>%
     mutate(
       estimate = formatC(estimate, format = "f", digits = 3),
@@ -1141,7 +1123,7 @@ fm_bench <-
 
 cov_bench <- function(
     dv = "diff_ttl_log",
-    xvar = xvar # Zhao (2024-01-24): added this to allow customization
+    xvar = xvar 
 ) {
   return(as.formula(
     setdiff(xvar, c("state")) %>% paste(collapse = " + ") %>%

@@ -91,9 +91,6 @@ tokens_all <- corpus_all %>%
       tokens_remove(letters) %>%
       ## no tokens_compound
       tokens_wordstem() %>%
-      ## Zhao: I tried the following based on the tutorial,
-      ## but doing so dramatically deflates party proportion estimated
-      ## for WinRed and I don't understand why
       tokens_select(min_nchar = 3)
   )
 
@@ -108,8 +105,6 @@ tokens_filtered <- tokens_all %>%
 
 dfm_all <- tokens_all %>%
   map(dfm) %>%
-  ## Zhao: based on the tutorial to get rid of infrequent tokens,
-  ## doing so basically makes "trump"/"chairman" the only truly useful keywords
   map(~ dfm_trim(.x, min_termfreq = 5, min_docfreq = 2))
 
 dfm_all
@@ -131,17 +126,13 @@ stm_all %>%
 ## semantic coherence: average
 stm_all %>%
   imap_dbl(~ mean(semanticCoherence(.x, dfm_all[[.y]])))
-#   actblue    winred
-# -27.10948 -28.92920
+
 
 # Keyword assisted topic models ================================================
 dfm_all %>% map(~ topfeatures(x = .x, n = nfeat(.x) * 0.1))
 
 ## keyatm keywords -------------------------------------------------------------
 keywords_stemmed <- list(
-  ## Keywords will be pruned because they do not appear in documents:
-  ## chairman, partisan
-  ## Does it allow equal number of surviving keywords?
   winred = list(
     party =
       c(
@@ -160,7 +151,6 @@ keywords_stemmed <- list(
       corpus() %>% tokens() %>% tokens_wordstem() %>% unlist(),
     report = c("total", "amount", "rais", "top", "number", "report")
   ),
-  ## Reviewer request: no names
   winred_v2 = list(
     party =
       c("republican", "gop", "party", "endorse", "conservative") %>%
@@ -207,8 +197,6 @@ keyatm_out_all <- template %>%
         function(x) keyATM(
           docs = keyatm_doc_all[[.x]],
           no_keyword_topics = x,
-          # Zhao: lowering this seems to improve party fraction for Winred
-          # and make the non-labeled topics more interpretable
           keywords = keywords_stemmed[[.x]],
           model = "base",
           options = list(seed = 12345)
@@ -436,7 +424,6 @@ print(
 )
 
 ## Figure 2 of keyATM Mar 2021 draft -------------------------------------------
-## "Poor quality of keywords for the Government operations topic"
 
 ## proportion of keywords
 prop_keyword <- keyatm_doc_all %>%
@@ -516,14 +503,7 @@ unique_keywords %>%
   group_by(Platform) %>%
   summarise(value = mean(value))
 
-# A tibble: 2 × 2
-#   Platform value
-#   <chr>    <dbl>
-# 1 ActBlue   134.
-# 2 WinRed    116.
 
-## perhaps density plot is better, given the sheer diff in number of documents
-## so density rendition of keyATM fig 2 right panel
 p <- ggplot(unique_keywords) +
   stat_density(
     aes(x = value, group = Platform, color = Platform, linetype = Platform),
@@ -649,10 +629,9 @@ print(pdf_default(p_list$winred_v2))
 dev.off()
 
 ## Summary
-summary(keyatm_obj_all$actblue_v2$`1_party`) ## 19.9%
-summary(keyatm_obj_all$winred_v2$`1_party`) ## 22.7%
+summary(keyatm_obj_all$actblue_v2$`1_party`) 
+summary(keyatm_obj_all$winred_v2$`1_party`) 
 
-## How about equal periods? 5.9%
 keyatm_obj_all$actblue_v2 %>%
   filter(date >= min(keyatm_obj_all$winred_v2$date)) %>%
   .$`1_party` %>%

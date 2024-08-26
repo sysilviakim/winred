@@ -16,7 +16,9 @@ chamb_vec <- c(house = "House", senate = "Senate")
 treated_all <- treated_df %>%
   glm(predict_formula("full"), data = ., family = "binomial")
 
-## Full data, no cfscore variables (very different!!!!!) -----------------------
+## Full data, no cfscore variables 
+
+-----------------------
 treated_all_nocfscore <- treated_df %>%
   glm(predict_formula("full", cfscore = FALSE), data = ., family = "binomial")
 

@@ -1,7 +1,7 @@
 source(here::here("R", "utilities.R"))
 
 # Load datasets ================================================================
-## This already contains Trump endorsement data
+
 load(here("data", "raw", "panel_filtered.Rda"))
 load(here("data", "raw", "corp_itemized.Rda"))
 df <- corp_itemized
@@ -26,8 +26,6 @@ df <- df %>%
   select(rpt, transaction_dt, everything())
 
 intersect(names(df), names(df_ls$full))
-## "rpt"            "transaction_dt" "state"          "cand_id"        "active"
-## The only things that should be are rpt and cand_id
 
 df_summ <- df %>%
   select(-transaction_dt, -state, -active) %>%
@@ -61,7 +59,6 @@ df_ls <- df_ls %>%
         corp_all_log = log(max(corp_all, 0) + 1)
       ) %>%
       ungroup() %>%
-      # Zhao (2022-04-04): need to take differences within candidate
       group_by(cand_id) %>%
       arrange(cand_id, rpt_int) %>%
       mutate(
@@ -88,7 +85,6 @@ for (min_rpt in c(0, 16, 17, 18, 19)) {
   ## Plot a sample of random 150 candidates ====================================
   df <- df_ls$full %>% mutate(cand_id = as.integer(factor(cand_id)) + 1)
   for (dv in "corp") {
-    # Zhao (2024-02-20): exclude options with labor PAC money to save time -----
     obj_name <- paste0("pm_", dv, "_log_minrpt_", min_rpt)
     fname <- here("output", paste0(obj_name, ".Rda"))
     pm <- df_ls %>%

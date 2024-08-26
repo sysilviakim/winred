@@ -4,13 +4,12 @@ source(here::here("R", "utilities.R"))
 load(here("data", "raw", "panel_filtered.Rda"))
 df_ls_orig <- df_ls[c("full", "senate", "house", "inc")]
 
-# ZL: explore PNAS data for referee request on unitem ==========================
 refunds_by_day <- read.csv(here("data", "raw", "pnas_refunds_by_day.csv"))
 
 pnas_campaigns <- unique(refunds_by_day$recipient)
 pnas_campaigns %<>% as.data.frame()
 names(pnas_campaigns) <- "recipient"
-pnas_campaigns %<>% mutate( # Based on their SI (p. 54-55)
+pnas_campaigns %<>% mutate( # Based on PNAS article's SI (p. 54-55)
   name = case_when(
     recipient == "cg" ~ "cory gardner",
     recipient == "djt" ~ "donald j trump",
@@ -58,7 +57,6 @@ pnas_campaigns %<>% mutate(
 df_ls_orig <- df_ls_orig %>%
   map(
     ~ .x %>%
-      # mutate(cand_id = as.integer(factor(cand_id)) + 1) %>%
       group_by(cand_id_int) %>%
       mutate(
         mean_pre_pct_unitem = mean(
@@ -83,10 +81,9 @@ tempdat <- df_ls_orig$full %>%
   ) %>%
   ungroup() %>%
   mutate(pre_pct_unitem_high = mean_pre_pct_unitem > 0.0514)
-# median for min_rpt==17
+
 pnas_campaigns %<>% left_join(tempdat, by = "cand_id_int")
-# $ kim klacik and lacy johnson had no pre-2019 election experience
-# View(pnas_campaigns)
+
 pnas_campaigns %$% table(pre_pct_unitem_high)
 
 sample_table <- pnas_campaigns %>% filter(!is.na(mean_pre_pct_unitem))
@@ -198,94 +195,7 @@ refunds_summ %<>% mutate(
   treat = weeks_to_treat > 0
 )
 
-# refunds_summ %>%
-#   group_by(cand_id_int) %>%
-#   summarize(
-#     sum_weeks_to_treat = sum(weeks_to_treat, na.rm = TRUE),
-#     pre_pct_unitem_high = first(pre_pct_unitem_high)
-#   ) %>%
-#   ungroup() %>%
-#   print()
 
-# # 0.366 (***)
-# refunds_summ %>%
-#   feols(
-#     treat ~ pre_pct_unitem_high +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# mean(refunds_summ$treat, na.rm = TRUE) # 0.212
-
-# ### The effect of treat on refunds may be lagged...
-# # 0.0276 (***)
-# refunds_summ %>%
-#   feols(
-#     refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# # n.s.
-# refunds_summ %>%
-#   feols(
-#     weekly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# # n.s.
-# refunds_summ %>%
-#   feols(
-#     monthly_refund_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-
-# # 0.0748 (***)
-# # 0.0305 (***)
-# refunds_summ %>%
-#   feols(
-#     chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# # 0.0265 (**)
-# # 0.00436 (*)
-# refunds_summ %>%
-#   feols(
-#     weekly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# mean(refunds_summ$weekly_chain_rate, na.rm = TRUE) # 0.0392
-# # 0.0510 (+)
-# # 0.0301 (**)
-# refunds_summ %>%
-#   feols(
-#     monthly_chain_rate ~ pre_pct_unitem_high + weeks_to_treat +
-#       senate + incumbent + open + no_election + PVI + pct_indv |
-#       date,
-#     data = .,
-#     cluster = c("cand_id_int", "date")
-#   ) %>%
-#   summary()
-# mean(refunds_summ$monthly_chain_rate, na.rm = TRUE) # 0.220
 
 mod_treat <-
   refunds_summ %>%
@@ -299,18 +209,6 @@ mod_treat <-
   ) %>%
   summary()
 mod_treat
-
-refunds_summ %>%
-  group_by(date) %>%
-  mutate(
-    mean_treat = mean(treat, na.rm = TRUE)
-  ) %>%
-  ungroup() %>%
-  mutate(
-    diff_mean_treat = treat - mean_treat
-  ) %$% summary(diff_mean_treat) # 0.000
-
-refunds_summ %$% mean(treat, na.rm = TRUE) # 0.227
 
 mod_weekly_chain <-
   refunds_summ %>%
@@ -389,9 +287,5 @@ etable(
   digits.stats = 2,
   replace = TRUE,
   page.width = "a4"
-  ## widths = c(8, 8)
-  ## Error in etable(rep(mod_weekly_chain, cluster = list("Candidate", "Date",  : 
-  ## The second element of '...' (named 'widths') is not valid: 
-  ## it should be a fixest object or a list of fixest objects, it is neither.
 )
 

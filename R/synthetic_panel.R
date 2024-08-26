@@ -281,10 +281,6 @@ file.rename(
 )
 
 ## Truncated from 2018 Q4
-# file.rename(
-#   here("tab", "ttl_att_full_minrpt_16.tex"),
-#   here("tab", "TableI4e.tex")
-# )
 file.copy(
   here("tab", "TableI3d.tex"),
   here("tab", "TableI4e.tex")
@@ -303,10 +299,6 @@ file.rename(
 )
 
 ## Truncated from 2019 Q1
-# file.rename(
-#   here("tab", "ttl_att_full_minrpt_17.tex"),
-#   here("tab", "TableI4i.tex")
-# )
 file.copy(
   here("tab", "TableI3g.tex"),
   here("tab", "TableI4i.tex")
@@ -325,10 +317,6 @@ file.rename(
 )
 
 ## Truncated from 2019 Q2
-# file.rename(
-#   here("tab", "ttl_att_full_minrpt_18.tex"),
-#   here("tab", "TableI4m.tex")
-# )
 file.copy(
   here("tab", "TableI3j.tex"),
   here("tab", "TableI4m.tex")
@@ -347,10 +335,6 @@ file.rename(
 )
 
 ## Truncated from 2019 Q3
-# file.rename(
-#   here("tab", "ttl_att_full_minrpt_19.tex"),
-#   here("tab", "TableI4q.tex")
-# )
 file.copy(
   here("tab", "TableI3m.tex"),
   here("tab", "TableI4q.tex")
