@@ -14,15 +14,15 @@ min_rpt_list <- list()
 I2 <- list()
 for (min_rpt in c(0, 16, 17, 18, 19)) {
   print(paste0("----- min_rpt == ", min_rpt, " -----"))
-  min_rpt_list[[paste0("min_rpt_", min_rpt)]] <- 
+  min_rpt_list[[paste0("min_rpt_", min_rpt)]] <-
     df_ls <- minrpt_filter(df_ls_orig, min_rpt = min_rpt)
-  
+
   ## Components of Table I.2 ===================================================
   I2[[paste0("min_rpt_", min_rpt)]] <- tibble(
     type = names(df_ls),
-    !!as.name(paste0("min_rpt_", min_rpt, "_cand")) := 
+    !!as.name(paste0("min_rpt_", min_rpt, "_cand")) :=
       df_ls %>% map_dbl(~ length(unique(.x$cand_id))),
-    !!as.name(paste0("min_rpt_", min_rpt, "_candXperiod")) := 
+    !!as.name(paste0("min_rpt_", min_rpt, "_candXperiod")) :=
       df_ls %>% map_dbl(nrow)
   )
 
@@ -597,7 +597,7 @@ I2_combined <- I2 %>%
   Reduce(left_join, .) %>%
   mutate(
     type = factor(
-      type, 
+      type,
       levels = c("full", "inc", "house", "senate"),
       labels = c("All", "Incumbents", "House", "Senate")
     )
@@ -636,4 +636,3 @@ final <- paste(
   sep = "\n"
 )
 writeLines(final, con = here("tab", "TableI2.tex"))
-

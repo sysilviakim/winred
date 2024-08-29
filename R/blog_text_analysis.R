@@ -341,11 +341,11 @@ p_list <- keyatm_out_all %>%
       scale_color_manual(values = c("#244082", "#732982"))
   )
 
-## Figure F.2(a), formerly actblue_keyatm_model_fit_v2.pdf
+## Figure F.2(a), formerly keyatm_actblue_model_fit_v2.pdf
 print(pdf_default(p_list$actblue_v2))
 ggsave(here("fig", "FigF2a.pdf"), width = 5, height = 3)
 
-## Figure F.2(b), formerly winred_keyatm_model_fit_v2.pdf
+## Figure F.2(b), formerly keyatm_winred_model_fit_v2.pdf
 print(pdf_default(p_list$winred_v2))
 ggsave(here("fig", "FigF2b.pdf"), width = 5, height = 3)
 
@@ -363,11 +363,11 @@ p_list <- keyatm_out_all %>%
     }
   )
 
-## Figure F.2(c), formerly actblue_keyatm_alpha_v2.pdf
+## Figure F.2(c), formerly keyatm_actblue_alpha_v2.pdf
 print(plot_notitle(pdf_default(p_list$actblue_v2)))
 ggsave(here("fig", "FigF2c.pdf"), width = 5, height = 3)
 
-## Figure F.2(d), formerly winred_keyatm_alpha_v2.pdf
+## Figure F.2(d), formerly keyatm_winred_alpha_v2.pdf
 print(plot_notitle(pdf_default(p_list$winred_v2)))
 ggsave(here("fig", "FigF2d.pdf"), width = 5, height = 3)
 
