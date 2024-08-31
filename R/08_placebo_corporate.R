@@ -28,7 +28,7 @@ df <- df %>%
 intersect(names(df), names(df_ls$full))
 
 df_summ <- df %>%
-  select(-transaction_dt, -state, -active) %>%
+  # select(-transaction_dt, -state, -active) %>%
   mutate(
     org_tp = case_when(
       org_tp == "CRP" | org_tp == "W" | org_tp == "T" ~ "C",
