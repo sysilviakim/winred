@@ -124,7 +124,7 @@ print(
 refunds_by_day %<>% left_join(pnas_campaigns)
 refunds_by_day %>% filter(!is.na(treat)) %$% summary(treat)
 refunds_by_day %>% filter(!is.na(treat)) %$% table(weeks_to_treat)
-refunds_by_day %>% filter(!is.na(treat)) %$% table(week)
+# refunds_by_day %>% filter(!is.na(treat)) %$% table(week)
 refunds_by_day %<>% mutate(
   weeks_to_treat = case_when(
     treat == 0 ~ 0,
