@@ -481,6 +481,14 @@ ggsave(here("fig", "FigF5a.pdf"), width = 5, height = 3)
 print(pdf_default(p_list[["v2"]]) + theme(legend.position = c(0.85, 0.75)))
 ggsave(here("fig", "Fig3a.pdf"), width = 5, height = 3)
 
+## TIF version
+tiff(
+  here("fig", "Fig3a.tif"), units = "in",
+  width = 5, height = 3, dpi = 1200
+)
+print(pdf_default(p_list[["v2"]]) + theme(legend.position = c(0.85, 0.75)))
+dev.off()
+
 ## number of unique keywords by document
 unique_keywords <- keyatm_doc_all[c("actblue", "winred")] %>%
   map(
@@ -547,6 +555,14 @@ p <- ggplot(unique_keywords_v2) +
 ## Figure 3(b), formerly number_unique_keywords_doc_v2.pdf
 print(pdf_default(p) + theme(legend.position = c(0.85, 0.75)))
 ggsave(here("fig", "Fig3b.pdf"), width = 5, height = 3)
+
+## TIF version
+tiff(
+  here("fig", "Fig3b.tif"), units = "in",
+  width = 5, height = 3, dpi = 1200
+)
+print(pdf_default(p) + theme(legend.position = c(0.85, 0.75)))
+dev.off()
 
 # keyATM plot ==================================================================
 keyatm_out_all$winred_v2$theta

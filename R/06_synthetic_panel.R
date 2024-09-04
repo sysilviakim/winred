@@ -481,10 +481,32 @@ print(
 )
 dev.off()
 
+## TIF version
+tiff(
+  here("fig", paste0("Fig5.tif")), units = "in",
+  width = 7.5, height = 3, res = 1200
+)
+print(
+  grid_arrange_shared_legend(
+    p1 + ggtitle("Pre-Matching"),
+    p2 + ggtitle("Pre-Refinement"),
+    p3 + ggtitle("Refinement")
+  )
+)
+dev.off()
+
 # Summary figures ==============================================================
 ## Three dependent variables ---------------------------------------------------
 ## Figure 6(a), formerly pm_3ys_full_log_varying.pdf
 pdf(here("fig", "Fig6a.pdf"), width = 6, height = 3.5)
+ggPM_3ys(ymin = -3, ymax = 2.5) # previously set to -2.5 and 2.5
+dev.off()
+
+## TIF version
+tiff(
+  here("fig", paste0("Fig6a.tif")), units = "in",
+  width = 6, height = 3.5, res = 1200
+)
 ggPM_3ys(ymin = -3, ymax = 2.5) # previously set to -2.5 and 2.5
 dev.off()
 
@@ -511,6 +533,14 @@ dev.off()
 ## Itemized vs. unitemized -----------------------------------------------------
 ## Figure 6(b), formerly pm_item_full_log_varying.pdf
 pdf(here("fig", "Fig6b.pdf"), width = 6, height = 3.5)
+ggPM_3ys(item = TRUE, ymin = -3, ymax = 2.5)
+dev.off()
+
+## TIF version
+tiff(
+  here("fig", paste0("Fig6b.tif")), units = "in",
+  width = 6, height = 3.5, res = 1200
+)
 ggPM_3ys(item = TRUE, ymin = -3, ymax = 2.5)
 dev.off()
 

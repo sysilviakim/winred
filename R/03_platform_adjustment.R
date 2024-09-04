@@ -573,12 +573,25 @@ p %>%
           )
       )
       dev.off()
+      
+      ## TIF version
+      tiff(
+        here("fig", paste0("adjust_2900_", .y, ".tif")), units = "in",
+        width = 3.5, height = 2.5, res = 1200
+      )
+      print(
+        pdf_default(.x) +
+          theme(
+            legend.position = c(.8, .3),
+            legend.background = element_blank()
+          )
+      )
+      dev.off()
     }
   )
 
 ## Rename files
 ## adjust_2900_Dem.pdf to Fig4a.pdf, adjust_2900_Rep.pdf to Fig4b.pdf
-
 file.rename(
   here("fig", "adjust_2900_Dem.pdf"),
   here("fig", "Fig4a.pdf")
@@ -587,4 +600,14 @@ file.rename(
 file.rename(
   here("fig", "adjust_2900_Rep.pdf"),
   here("fig", "Fig4b.pdf")
+)
+
+file.rename(
+  here("fig", "adjust_2900_Dem.tif"),
+  here("fig", "Fig4a.tif")
+)
+
+file.rename(
+  here("fig", "adjust_2900_Rep.tif"),
+  here("fig", "Fig4b.tif")
 )
