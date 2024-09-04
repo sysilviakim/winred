@@ -497,7 +497,10 @@ ggPM_var2 <- function(x, choice = "full", target = NULL,
   
   p <- ggplot(
     temp,
-    aes(x = period, y = estimate, group = Truncation, color = Truncation)
+    aes(
+      x = period, y = estimate, 
+      group = Truncation, color = Truncation, shape = Truncation
+    )
   ) +
     geom_point(position = position_dodge(width = dodge)) +
     xlab("Time") +
