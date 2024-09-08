@@ -54,9 +54,9 @@ desc_df_create_fxn <- function(df, timing = FALSE) {
         cand_id, last_name, first_name, state, region, inc, office, treated,
         avg_past_ttl, avg_past_ttl_log, recipient_cfscore, dwnom1,
         seniority, no_election, office_election, seniority, gender,
-        proximity_recipient_cfscore, proximity_dwnom1, PVI, PVI_raw,
+        proximity_recipient_cfscore, proximity_dwnom1, PVI, ## PVI_raw,
         avg_ttl_opp, avg_ttl_opp_log, avg_indv_opp, avg_indv_opp_log,
-        avg_past_ttl_opp_log, first_year, last_year, 
+        avg_past_ttl_opp_log, ## first_year, last_year, 
         state_club_size, contains("cash_on_hand")
       ) %>%
       dedup() %>%
