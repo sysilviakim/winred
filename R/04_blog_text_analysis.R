@@ -484,7 +484,7 @@ ggsave(here("fig", "Fig3a.pdf"), width = 5, height = 3)
 ## TIF version
 tiff(
   here("fig", "Fig3a.tif"), units = "in",
-  width = 5, height = 3, dpi = 1200
+  width = 5, height = 3, res = 1200
 )
 print(pdf_default(p_list[["v2"]]) + theme(legend.position = c(0.85, 0.75)))
 dev.off()
@@ -559,7 +559,7 @@ ggsave(here("fig", "Fig3b.pdf"), width = 5, height = 3)
 ## TIF version
 tiff(
   here("fig", "Fig3b.tif"), units = "in",
-  width = 5, height = 3, dpi = 1200
+  width = 5, height = 3, res = 1200
 )
 print(pdf_default(p) + theme(legend.position = c(0.85, 0.75)))
 dev.off()
