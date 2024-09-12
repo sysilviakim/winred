@@ -921,6 +921,7 @@ rename_lmterm <- function(x) {
         term == "regionNorth Central" ~ "Region: North Central",
         term == "regionNortheast" ~ "Region: Northeast",
         term == "regionWest" ~ "Region: West",
+        term == "gender" ~ "Gender: Male",
         TRUE ~ str_to_title(term)
       )
     ) %>%
@@ -928,7 +929,7 @@ rename_lmterm <- function(x) {
       term = factor(
         term,
         levels = c(
-          "(Intercept)", "Senate", "Incumbent", "Open Seat", "Gender",
+          "(Intercept)", "Senate", "Incumbent", "Open Seat", "Gender: Male",
           "No Election", "Cook PVI",
           "Avg. Opponent Past Fundraising (Logged)",
           "Change in (Logged) Fundraising (2019 Q3-Q4)",
