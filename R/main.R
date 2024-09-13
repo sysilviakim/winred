@@ -1,5 +1,10 @@
 # Install the packages as it was last replicated + use here package ============
-## Uncheck the following lines if the packages are not installed
+## Last replicated with
+# R version 4.4.1 (2024-06-14 ucrt)
+# Platform: x86_64-w64-mingw32/x64
+# Running under: Windows 11 x64 (build 22631)
+
+## Uncomment the following lines if the packages are not installed
 # install.packages("renv")
 # install.packages("here")
 # renv::restore()
