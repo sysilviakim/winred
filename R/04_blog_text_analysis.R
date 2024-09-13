@@ -282,7 +282,7 @@ print(
     top_words(keyatm_out_all$actblue_v2, show_keyword = FALSE) %>%
       set_names(
         ., c(
-          "Party", "Reporting", "Campaign Management",
+          "Party", "Reporting", "Platform Features",
           "Recurring Donations", "Small Donations"
         )
       )
